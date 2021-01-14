@@ -1,0 +1,16 @@
+.link {
+  display: inline-block;
+  text-decoration: none;
+  padding: 10px;
+  margin-right: 5px;
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: cadetblue;
+  font-size: 24px;
+}
+
+.activLink {
+  composes: link;
+  color: blue;
+}
