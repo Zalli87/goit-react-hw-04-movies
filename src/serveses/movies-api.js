@@ -24,7 +24,7 @@ export function fetchMovieById(movieId) {
 
 export function fetchMovieByName(movieQuery) {
   return fetchWithErrorHandling(
-    `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${movieQuery}&page=1&include_adult=false`,
+    `${BASE_URL}search/movie?api_key=${API_KEY}&language=en-US&query=${movieQuery}&page=1&include_adult=false`,
   );
 }
 

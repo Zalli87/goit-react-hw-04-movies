@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import s from './SearchForm.module.css';
 
 function SearchForm({ onSubmit }) {
-  const [movieQuery, setImageQuery] = useState('');
+  const [movieQuery, setMovieQuery] = useState('');
 
   const handlQueryChange = event => {
-    setImageQuery(event.currentTarget.value.toLowerCase());
+    setMovieQuery(event.currentTarget.value.toLowerCase());
   };
 
   const handlSubmit = event => {
@@ -18,7 +18,7 @@ function SearchForm({ onSubmit }) {
     }
 
     onSubmit(movieQuery);
-    setImageQuery('');
+    setMovieQuery('');
   };
 
   return (
