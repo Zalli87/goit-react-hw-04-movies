@@ -1,38 +1,40 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
-import { NavLink, Route, useParams, useRouteMatch } from 'react-router-dom';
+import { Route, useParams, useRouteMatch } from 'react-router-dom';
+import Loader from 'react-loader-spinner';
 import * as moviesAPI from '..//../serveses/movies-api';
 import CastPage from '../CastPage/CastPage';
 import ReviewPage from '../ReviewsPage/ReviewsPage';
+import MovieCard from '..//../components/MovieCard/MovieCard';
 
 export default function MovieDetailsPage() {
   const { movieId } = useParams();
   const { url, path } = useRouteMatch();
   const [movie, setMovie] = useState(null);
-  const BASE_URL = 'https://image.tmdb.org/t/p/w500';
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    moviesAPI.fetchMovieById(movieId).then(setMovie);
+    setStatus('pending');
+    moviesAPI
+      .fetchMovieById(movieId)
+      .then(response => {
+        setMovie(response);
+        setStatus('resolved');
+      })
+      .catch(error => {
+        setStatus('rejected');
+        setError(error);
+      });
   }, [movieId]);
 
   return (
     <>
-      {movie && (
+      {status === 'idle' && <p>Not any information for this movie</p>}
+      {status === 'pending' && <Loader />}
+      {status === 'resolved' && (
         <>
-          <img src={`${BASE_URL}${movie.backdrop_path}`} alt={movie.title} />
-          <h1>{movie.title}</h1>
-          <p>User score: {movie.vote_average}</p>
-          <p>Genres: {movie.genres.map(({ name }) => name).join(', ')} </p>
-          <p>{movie.overview}</p>
-          <h2>Info</h2>
-          <ul>
-            <li>
-              <NavLink to={`${url}/cast`}>Cast</NavLink>
-            </li>
-            <li>
-              {' '}
-              <NavLink to={`${url}/review`}>Review</NavLink>
-            </li>
-          </ul>
+          <MovieCard movie={movie} url={url} />
 
           <Route path={`${path}/cast`}>
             <CastPage movieId={movieId} />
@@ -42,6 +44,11 @@ export default function MovieDetailsPage() {
           </Route>
         </>
       )}
+      {status === 'rejected' && <p>{error}</p>}
     </>
   );
 }
+
+MovieDetailsPage.protoType = {
+  movieId: PropTypes.string.isRequired,
+};
