@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Loader from 'react-loader-spinner';
 import * as moviesAPI from '..//../serveses/movies-api';
 import SearchForm from '..//../components/SearchForm/SearchForm';
+import MoviesList from '..//../components/MoviesList/MoviesList';
 
 function App() {
   const [movieQuery, setMovieQuery] = useState('');
   const [movies, setMovies] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [error, setError] = useState(null);
 
   const handlFormSubmit = movieQuery => {
     setMovieQuery(movieQuery);
@@ -15,18 +18,32 @@ function App() {
     if (movieQuery === '') {
       return;
     }
-    moviesAPI.fetchMovieByName(movieQuery).then(setMovies);
+
+    setStatus('pending');
+
+    moviesAPI
+      .fetchMovieByName(movieQuery)
+      .then(({ results }) => {
+        if (results.length === 0) {
+          setStatus('idle');
+          return;
+        }
+        setMovies(results);
+        setStatus('resolved');
+      })
+      .catch(error => {
+        setStatus('rejected');
+        setError(error);
+      });
   }, [movieQuery]);
 
   return (
     <>
       <SearchForm onSubmit={handlFormSubmit} />
-      {movies &&
-        movies.results.map(movie => (
-          <li key={movie.id}>
-            <Link to={`movies/${movie.id}`}>{movie.title}</Link>
-          </li>
-        ))}
+      {status === 'idle' && <p>No movies found. Please, enter new query...</p>}
+      {status === 'pending' && <Loader />}
+      {status === 'resolved' && <MoviesList movies={movies} />}
+      {status === 'rejected' && <p>{error.message}</p>}
     </>
   );
 }

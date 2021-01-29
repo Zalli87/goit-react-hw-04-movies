@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
 import * as moviesAPI from '..//../serveses/movies-api';
 import notFoundImg from '..//../images/notFoundImg.jpg';
+import s from './CastPage.module.css';
 
 export default function CastPage({ movieId }) {
   const BASE_URL = 'https://image.tmdb.org/t/p/w500';
@@ -34,9 +35,9 @@ export default function CastPage({ movieId }) {
       {status === 'pending' && <Loader />}
       {status === 'resolved' && (
         <>
-          <ul>
+          <ul className={s.castList}>
             {cast.map(({ id, name, profile_path, character }) => (
-              <li key={id}>
+              <li key={id} className={s.listItem}>
                 <img
                   src={
                     profile_path ? `${BASE_URL}${profile_path}` : notFoundImg
@@ -50,7 +51,7 @@ export default function CastPage({ movieId }) {
           </ul>
         </>
       )}
-      {status === 'rejected' && <p>{error}</p>}
+      {status === 'rejected' && <p>{error.message}</p>}
     </>
   );
 }
